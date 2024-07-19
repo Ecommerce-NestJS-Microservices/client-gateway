@@ -1,5 +1,6 @@
-import { Body, Controller,Delete, Get, Inject, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PRODUCT_SERVICE } from 'src/config';
 
 @Controller('products')
@@ -13,10 +14,16 @@ export class ProductsController {
     return 'This action adds a new product';
   }
 
+  //  When it's @Query, its come of part of url, http://localhost:3000/api/products?page=2&limit=4
+  //  When it's @Body, its come of post, patch petition,
+  //  When it's @Param, its come of url's segments, api/products/1
 
-  @Get()
-  findAllProducts() {
-  return this.productsClient.send( {cmd: 'find_all_products' }, {})    
+  @Get()  
+  findAllProducts(@Query() paginationDto: PaginationDto) {
+    // return this.productsClient.send({ cmd: 'find_all_products' }, { limit: 2, page: 2 } //manual)
+    return this.productsClient.send(
+      { cmd: 'find_all_products' },
+      paginationDto)
   }
 
   @Get(':id')
@@ -32,7 +39,7 @@ export class ProductsController {
 
   @Patch(':id')
   patchProduct(
-    @Param('id') id : string,
+    @Param('id') id: string,
     @Body() body: any) {
     return `this function update product ${id}`
   }

@@ -14,7 +14,7 @@ import { object } from 'joi';
         transport: Transport.TCP,
         options: {
           host: envs.productMicroserviceHost,
-          port: 3010
+          port: envs.productMicroservicePort,
         }
 
       },

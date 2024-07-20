@@ -4,6 +4,9 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PRODUCT_SERVICE } from 'src/config';
 import { ProductsModule } from './products.module';
 import { catchError, firstValueFrom } from 'rxjs';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { number } from 'joi';
 
 @Controller('products')
 export class ProductsController {
@@ -12,8 +15,11 @@ export class ProductsController {
   ) { }
 
   @Post()
-  createProduct() {
-    return 'This action adds a new product';
+  createProduct(@Body() createProductDto: CreateProductDto) {
+    return this.productsClient.send(
+      { cmd: 'create_product' },
+      createProductDto
+    )
   }
 
   //  When it's @Query, its come of part of url, http://localhost:3000/api/products?page=2&limit=4
@@ -33,11 +39,8 @@ export class ProductsController {
 
     return this.productsClient.send({ cmd: 'find_one_products' }, { id })
       .pipe(
-        catchError(err => {throw new RpcException(err)})
+        catchError(err => { throw new RpcException(err) })
       )
-
-
-
 
     // second way
     // try {
@@ -49,31 +52,45 @@ export class ProductsController {
     // } catch (error) {
     //   throw new RpcException(error);
 
-      // first way
+    // first way
     // console.log(error);
-      // throw new BadRequestException(error);
+    // throw new BadRequestException(error);
 
-    }
-
-
-    // return this.productsClient.
-    //   send({ cmd: 'find_one_products' }, { id: id })
-    // .subscribe(resp => {}) other way
   }
 
+  // return this.productsClient.
+  //   send({ cmd: 'find_one_products' }, { id: id })
+  // .subscribe(resp => {}) other way
 
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {
-    return `This action removes a #${id} product`;
+    return this.productsClient.send(
+      { cmd: 'delete_product' },
+      { id: id } // is better a object instead string since is more hard change from string to object. and if we have object is more easy expand a object
+
+    )
+      .pipe(
+        catchError(err => { throw new RpcException(err) })
+      )
   }
 
   @Patch(':id')
   patchProduct(
-    @Param('id') id: string,
-    @Body() body: any) {
-    return `this function update product ${id}`
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDto: UpdateProductDto) {
+
+    // return {id, updateProductDto}
+    
+    const updateProductPayload = { ...updateProductDto, id}
+
+    return this.productsClient.send(
+      { cmd: 'update_product' },
+      updateProductPayload
+    )
+      .pipe(
+        catchError(err => { throw new RpcException(err) })
+      )
   }
-
-
 }
+
 

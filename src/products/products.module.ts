@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ProductsController } from './products.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { envs, PRODUCT_SERVICE } from 'src/config';
+import { envs, ORDER_SERVICE, PRODUCT_SERVICE } from 'src/config';
 import { object } from 'joi';
 
 @Module({
@@ -18,6 +18,9 @@ import { object } from 'joi';
         }
 
       },
+
+   
+
       
     ])
   ]

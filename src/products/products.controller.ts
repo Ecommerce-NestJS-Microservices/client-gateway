@@ -3,7 +3,7 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PRODUCT_SERVICE } from 'src/config';
 import { ProductsModule } from './products.module';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 
 @Controller('products')
 export class ProductsController {
@@ -31,16 +31,26 @@ export class ProductsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
 
-    try {
-
-      const product = await firstValueFrom(
-        this.productsClient.send({ cmd: 'find_one_products' }, { id })
+    return this.productsClient.send({ cmd: 'find_one_products' }, { id })
+      .pipe(
+        catchError(err => {throw new RpcException(err)})
       )
-      return product;
 
-    } catch (error) {
-      throw new RpcException(error);
-      // console.log(error);
+
+
+
+    // second way
+    // try {
+    //   const product = await firstValueFrom(
+    //     this.productsClient.send({ cmd: 'find_one_products' }, { id })
+    //   )
+    //   return product;
+
+    // } catch (error) {
+    //   throw new RpcException(error);
+
+      // first way
+    // console.log(error);
       // throw new BadRequestException(error);
 
     }

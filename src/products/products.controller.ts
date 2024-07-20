@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PRODUCT_SERVICE } from 'src/config';
+import { ProductsModule } from './products.module';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('products')
 export class ProductsController {
@@ -18,7 +20,7 @@ export class ProductsController {
   //  When it's @Body, its come of post, patch petition,
   //  When it's @Param, its come of url's segments, api/products/1
 
-  @Get()  
+  @Get()
   findAllProducts(@Query() paginationDto: PaginationDto) {
     // return this.productsClient.send({ cmd: 'find_all_products' }, { limit: 2, page: 2 } //manual)
     return this.productsClient.send(
@@ -27,8 +29,23 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `This action returns a #${id} product`;
+  async findOne(@Param('id') id: string) {
+
+    try {
+
+      const product = await firstValueFrom(
+        this.productsClient.send({ cmd: 'find_one_products' }, { id })
+      )
+      return product;
+
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+
+
+    // return this.productsClient.
+    //   send({ cmd: 'find_one_products' }, { id: id })
+    // .subscribe(resp => {}) other way
   }
 
 

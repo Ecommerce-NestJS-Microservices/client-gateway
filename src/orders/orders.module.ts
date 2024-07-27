@@ -10,11 +10,11 @@ import { envs, ORDER_SERVICE } from 'src/config';
   imports: [
     ClientsModule.register([
       {
-        name: ORDER_SERVICE,
+        name: ORDER_SERVICE, // name given to inject in controller 
         transport: Transport.TCP,
         options: {
-          host: envs.orderMicroserviceHost,
-          port: envs.orderMicroservicePort
+          // host: envs.orderMicroserviceHost,
+          // port: envs.orderMicroservicePort
         }
       }
     ])

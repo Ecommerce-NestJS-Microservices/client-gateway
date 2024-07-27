@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { PRODUCT_SERVICE } from 'src/config';
+import { NATS_SERVICE, PRODUCT_SERVICE } from 'src/config';
 import { ProductsModule } from './products.module';
 import { catchError, firstValueFrom } from 'rxjs';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -11,12 +11,14 @@ import { number } from 'joi';
 @Controller('products')
 export class ProductsController {
   constructor(
-    @Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy,
+    //@Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy,
+    @Inject(NATS_SERVICE) private readonly client: ClientProxy, // NATS_SERVICE INJECTION TOKEN
+
   ) { }
 
   @Post()
   createProduct(@Body() createProductDto: CreateProductDto) {
-    return this.productsClient.send(
+    return this.client.send(
       { cmd: 'create_product' },
       createProductDto
     )
@@ -29,7 +31,7 @@ export class ProductsController {
   @Get()
   findAllProducts(@Query() paginationDto: PaginationDto) {
     // return this.productsClient.send({ cmd: 'find_all_products' }, { limit: 2, page: 2 } //manual)
-    return this.productsClient.send(
+    return this.client.send(
       { cmd: 'find_all_products' },
       paginationDto)
   }
@@ -37,7 +39,7 @@ export class ProductsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
 
-    return this.productsClient.send({ cmd: 'find_one_products' }, { id })
+    return this.client.send({ cmd: 'find_one_products' }, { id })
       .pipe(
         catchError(err => { throw new RpcException(err) })
       )
@@ -64,7 +66,7 @@ export class ProductsController {
 
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {
-    return this.productsClient.send(
+    return this.client.send(
       { cmd: 'delete_product' },
       { id: id } // is better a object instead string since is more hard change from string to object. and if we have object is more easy expand a object
 
@@ -80,10 +82,10 @@ export class ProductsController {
     @Body() updateProductDto: UpdateProductDto) {
 
     // return {id, updateProductDto}
-    
-    const updateProductPayload = { ...updateProductDto, id}
 
-    return this.productsClient.send(
+    const updateProductPayload = { ...updateProductDto, id }
+
+    return this.client.send(
       { cmd: 'update_product' },
       updateProductPayload
     )

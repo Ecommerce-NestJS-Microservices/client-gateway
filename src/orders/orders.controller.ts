@@ -20,8 +20,6 @@ export class OrdersController {
   @Post()
   createOrder(@Body() createOrderDto: CreateOrderDto) {
 
-
-
     return this.ordersClient.send(
       'createOrder',
       createOrderDto
@@ -47,7 +45,7 @@ export class OrdersController {
       const order = await firstValueFrom(
         this.ordersClient.send('findOneOrder', { id })
       );
-      return order;
+      return order; 
 
     } catch (error) {
       throw new RpcException(error);

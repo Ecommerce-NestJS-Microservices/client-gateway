@@ -12,13 +12,13 @@ import { number } from 'joi';
 export class ProductsController {
   constructor(
     //@Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy,
-    @Inject(NATS_SERVICE) private readonly client: ClientProxy, // NATS_SERVICE INJECTION TOKEN
+    @Inject(NATS_SERVICE) private readonly clientProduct: ClientProxy, // NATS_SERVICE INJECTION TOKEN
 
   ) { }
 
   @Post()
   createProduct(@Body() createProductDto: CreateProductDto) {
-    return this.client.send(
+    return this.clientProduct.send(
       { cmd: 'create_product' },
       createProductDto
     )
@@ -31,7 +31,7 @@ export class ProductsController {
   @Get()
   findAllProducts(@Query() paginationDto: PaginationDto) {
     // return this.productsClient.send({ cmd: 'find_all_products' }, { limit: 2, page: 2 } //manual)
-    return this.client.send(
+    return this.clientProduct.send(
       { cmd: 'find_all_products' },
       paginationDto)
   }
@@ -39,7 +39,7 @@ export class ProductsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
 
-    return this.client.send({ cmd: 'find_one_products' }, { id })
+    return this.clientProduct.send({ cmd: 'find_one_products' }, { id })
       .pipe(
         catchError(err => { throw new RpcException(err) })
       )
@@ -66,7 +66,7 @@ export class ProductsController {
 
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {
-    return this.client.send(
+    return this.clientProduct.send(
       { cmd: 'delete_product' },
       { id: id } // is better a object instead string since is more hard change from string to object. and if we have object is more easy expand a object
 
@@ -85,7 +85,7 @@ export class ProductsController {
 
     const updateProductPayload = { ...updateProductDto, id }
 
-    return this.client.send(
+    return this.clientProduct.send(
       { cmd: 'update_product' },
       updateProductPayload
     )

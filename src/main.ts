@@ -8,6 +8,7 @@ async function bootstrap() {
 
   const logger = new Logger('Main-Gateway');
 
+  console.log('hola mundo')
   console.log(envs.natsServers);
 
 

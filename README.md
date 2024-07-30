@@ -8,13 +8,15 @@ It's responsible for handling requests, forwarding them appropriate microservice
 1. Clone the repository.
 2. Install depedencies.
 3. Create file `.env`based on `env.template`
-4. Start the necesary microservices.
-5. Start proyect with `npm run start: dev`
-
-## Nats
-
+4. Start Server NATS
 ```
 docker run -d --name nats-server -p 4222:4222 -p 6222:6222 -p 8222:8222 nats
 ```
+5. Start the necesary microservices.
+6. Start proyect with `npm run start: dev`
+
+## Nats
+
+
 
 

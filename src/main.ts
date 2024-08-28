@@ -33,7 +33,7 @@ async function bootstrap() {
   app.useGlobalFilters(new RpcCustomExceptionFilter())
 
   await app.listen(envs.port);
-  console.log('TERCER cambio !')
+  console.log('Health check configured !')
 
   logger.log(`Gateway running on port ${envs.port}`);
 }

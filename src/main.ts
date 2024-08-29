@@ -19,6 +19,7 @@ async function bootstrap() {
       {
         path: '',
         method: RequestMethod.GET,
+       
       }
     ]
   });
